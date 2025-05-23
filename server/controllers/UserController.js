@@ -13,7 +13,7 @@ const clerkWebhooks = async (req, res) => {
       "svix-signature": req.headers["svix-signature"],
     });
 
-    const { data, tyoe } = req.body;
+    const { data, type } = req.body;
 
     switch (type) {
       case "user.created":
@@ -38,6 +38,7 @@ const clerkWebhooks = async (req, res) => {
         await userModel.findOneAndUpdate(
           { clerkId: data.id },
           updatedUser,
+          { upsert: true, new: true }
         );
         res.json({})
 
@@ -51,11 +52,8 @@ const clerkWebhooks = async (req, res) => {
         break;
 
       default:
-        console.log("Unknown event type:", type);
         break;
     }
-    return res.status(200).json({ message: "Webhook received successfully" });
-
 
 
   } catch (error) {
